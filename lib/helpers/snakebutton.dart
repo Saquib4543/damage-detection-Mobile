@@ -33,7 +33,7 @@ class _SnakeBorderButtonState extends State<SnakeBorderButton> with SingleTicker
           child: ElevatedButton(
             onPressed: widget.onPressed,
             child: widget.child,
-            style: ElevatedButton.styleFrom(primary: Colors.transparent, shadowColor: Colors.transparent),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.transparent, shadowColor: Colors.transparent),
           ),
         );
       },

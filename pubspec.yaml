@@ -47,6 +47,9 @@ dependencies:
   http_parser: ^4.0.2
   glass: ^1.0.1+1
   tflite_flutter: ^0.10.1
+  file_picker: ^5.0.0
+  universal_html: ^2.0.4
+  http: ^0.13.3
 
 dev_dependencies:
   flutter_test:
