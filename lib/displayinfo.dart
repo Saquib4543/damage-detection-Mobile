@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:glass/glass.dart';
-import 'dart:convert';
 import 'package:damagedetection1/helpers/glasscontainer.dart';
 import 'package:damagedetection1/selfinspection.dart';
 import 'package:get/get.dart';
 
 class DetailPage extends StatelessWidget {
-  final List<MapEntry<String, dynamic>> selectedEntries;
+  final List<dynamic> selectedEntries;
   final Map<String, String> keyMapping = {
     "rc_number": "RC Number",
     "registration_date": "Registration Date",
@@ -78,12 +77,22 @@ class DetailPage extends StatelessWidget {
     return text.split('_').map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase()).join(' ');
   }
 
+  List<Widget> _buildCards(List<dynamic> entries) {
+    List<MapEntry<String, dynamic>> mapEntries = [];
 
-  List<Widget> _buildCards(List<MapEntry<String, dynamic>> entries) {
-    // Chunking the data into sets of 4, similar to your original method
+    for (var entry in entries) {
+      if (entry is Map<String, dynamic>) {
+        mapEntries.addAll(entry.entries);
+      } else {
+        // Handle non-map entries
+        mapEntries.add(MapEntry('Item', entry.toString()));
+      }
+    }
+
+    // Chunking the data into sets of 4
     List<List<MapEntry<String, dynamic>>> chunks = [];
-    for (var i = 0; i < entries.length; i += 4) {
-      chunks.add(entries.sublist(i, i + 4 > entries.length ? entries.length : i + 4));
+    for (var i = 0; i < mapEntries.length; i += 4) {
+      chunks.add(mapEntries.sublist(i, i + 4 > mapEntries.length ? mapEntries.length : i + 4));
     }
 
     // For each chunk, create a GlassContainer that displays the key-value pairs
@@ -116,7 +125,11 @@ class DetailPage extends StatelessWidget {
         padding: EdgeInsets.all(10),
         child: ListView(
           children: [
-            Text("Please check your details", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue[900]), textAlign: TextAlign.center,),
+            Text(
+              "Please check your details",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue[900]),
+              textAlign: TextAlign.center,
+            ),
             SizedBox(height: 20),
             ..._buildCards(selectedEntries),
             SizedBox(height: 20),
@@ -127,7 +140,7 @@ class DetailPage extends StatelessWidget {
                 shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0))),
               ),
               onPressed: () {
-                Get.to(SelfInspection());
+                Get.to(() => SelfInspection());
               },
               child: Text('Continue to take Car Images', style: TextStyle(color: Colors.blue[900])),
             ),
@@ -138,6 +151,7 @@ class DetailPage extends StatelessWidget {
     );
   }
 }
+
 
 // class DetailPage extends StatelessWidget {
 //   final String rawJsonData;

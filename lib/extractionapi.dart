@@ -410,29 +410,35 @@ class ImageUploadService {
     return html.Blob([bytes]);
   }
 
-  Future<dynamic> sendRcRegNumber(String rcRegNumber) async {
+  Future<Map<String, dynamic>> sendRcRegNumber(String rcRegNumber) async {
     print(rcRegNumber);
     final Uri apiUrl = Uri.parse('https://kyc-api.aadhaarkyc.io/api/v1/rc/rc-full');
     String token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY1MTQ3MjA3OCwianRpIjoiN2Y1ZjAzNmEtNDBlMC00NDFlLWE4NzYtMWFjMGU5YWE2OTUyIiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LmlhaWxAYWFkaGFhcmFwaS5pbyIsIm5iZiI6MTY1MTQ3MjA3OCwiZXhwIjoxOTY2ODMyMDc4LCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsicmVhZCJdfX0.Uv7arJdKKhug-6k60H4ovD1VxW1LuDLVcfX5iiKQQs4';
-    final response = await http.post(
-      apiUrl,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: json.encode({
-        'id_number': rcRegNumber,
-      }),
-    );
 
-    if (response.statusCode == 200) {
-      print('Successfully sent data to the API!');
-      print(response);
-      print(response.body);
-      return _parseResponse(response.body);
-    } else {
-      print('Failed to send data. Status code: ${response.statusCode}');
-      throw Exception('Failed to send RC number: ${response.body}');
+    try {
+      final response = await http.post(
+        apiUrl,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({
+          'id_number': rcRegNumber,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('Successfully sent data to the API!');
+        Map<String, dynamic> jsonResponse = json.decode(response.body);
+        print(jsonResponse);
+        return jsonResponse;
+      } else {
+        print('Failed to send data. Status code: ${response.statusCode}');
+        throw Exception('Failed to send RC number. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error sending RC number: $e');
     }
   }
+
 }

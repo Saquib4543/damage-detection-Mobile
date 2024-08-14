@@ -20,7 +20,7 @@ class ImageUploadService {
   static const String username = "gAAAAABfqhmdiVzoGThMkYkX1wKTlbK_yh1XLdECahns85T9XhNl7Lff3I-frOyn8gGoWSctvVTw-4woa8gkRly9RQPZz6n67w==";
   static const String password = "gAAAAABfqhmdiVzoGThMkYkX1wKTlbK_yh1XLdECahns85T9XhNl7Lff3I-frOyn8gGoWSctvVTw-4woa8gkRly9RQPZz6n67w==";
 
-  Future<String?> getAuthToken() async {
+  Future<String> getAuthToken() async {
     final Map<String, String> headers = {
       'Content-Type': 'application/json'
     };
@@ -30,18 +30,25 @@ class ImageUploadService {
       'password': password,
     });
 
-    final response = await http.post(
-      Uri.parse(AUTH_API_ENDPOINT),
-      headers: headers,
-      body: body,
-    );
+    try {
+      final response = await http.post(
+        Uri.parse(AUTH_API_ENDPOINT),
+        headers: headers,
+        body: body,
+      );
 
-    if (response.statusCode == 200) {
-      Map<String, dynamic> jsonResponse = json.decode(response.body);
-      print(jsonResponse['access_token']);
-      return jsonResponse['access_token'] as String;
-    } else {
-      throw Exception('Failed to authenticate.');
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonResponse = json.decode(response.body);
+        if (jsonResponse['access_token'] is String) {
+          return jsonResponse['access_token'] as String;
+        } else {
+          throw Exception('Invalid access token format');
+        }
+      } else {
+        throw Exception('Failed to authenticate. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Authentication error: $e');
     }
   }
 
@@ -62,7 +69,7 @@ class ImageUploadService {
     return MediaType('application', 'octet-stream');
   }
 
-  Future<dynamic> uploadImage(dynamic image) async {
+  Future<Map<String, dynamic>> uploadImage(dynamic image) async {
     if (kIsWeb) {
       return _uploadImageWeb(image as Uint8List);
     } else {
@@ -70,7 +77,7 @@ class ImageUploadService {
     }
   }
 
-  Future<dynamic> _uploadImageWeb(Uint8List imageData) async {
+  Future<Map<String, dynamic>> _uploadImageWeb(Uint8List imageData) async {
     final token = await getAuthToken();
     final blob = html.Blob([imageData]);
     final form = html.FormData();
@@ -111,7 +118,7 @@ class ImageUploadService {
     return completer.future;
   }
 
-  Future<dynamic> _uploadImageMobile(File imageFile) async {
+  Future<Map<String, dynamic>> _uploadImageMobile(File imageFile) async {
     final token = await getAuthToken();
 
     var request = http.MultipartRequest('POST', Uri.parse(API_ENDPOINT));
@@ -123,13 +130,18 @@ class ImageUploadService {
     final dummyImagePath = await _saveDummyImage();
     request.files.add(await http.MultipartFile.fromPath('rc_page_2', dummyImagePath));
 
-    var response = await request.send();
-    if (response.statusCode == 200) {
-      print("Uploaded!");
-      return json.decode(await response.stream.bytesToString());
-    } else {
-      print("Not uploaded!");
-      throw Exception('Failed to upload image');
+    try {
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        print("Uploaded!");
+        String responseBody = await response.stream.bytesToString();
+        return json.decode(responseBody);
+      } else {
+        print("Not uploaded!");
+        throw Exception('Failed to upload image. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error during image upload: $e');
     }
   }
 
@@ -152,29 +164,66 @@ class ImageUploadService {
     return html.Blob([bytes]);
   }
 
-  Future<dynamic> sendRcRegNumber(String rcRegNumber) async {
+  // Future<Map<String, dynamic>> sendRcRegNumber(String rcRegNumber) async {
+  //   print(rcRegNumber);
+  //   final Uri apiUrl = Uri.parse('https://kyc-api.aadhaarkyc.io/api/v1/rc/rc-full');
+  //   String token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY1MTQ3MjA3OCwianRpIjoiN2Y1ZjAzNmEtNDBlMC00NDFlLWE4NzYtMWFjMGU5YWE2OTUyIiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LmlhaWxAYWFkaGFhcmFwaS5pbyIsIm5iZiI6MTY1MTQ3MjA3OCwiZXhwIjoxOTY2ODMyMDc4LCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsicmVhZCJdfX0.Uv7arJdKKhug-6k60H4ovD1VxW1LuDLVcfX5iiKQQs4';
+  //
+  //   try {
+  //     final response = await http.post(
+  //       apiUrl,
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Authorization': 'Bearer $token',
+  //       },
+  //       body: json.encode({
+  //         'id_number': rcRegNumber,
+  //       }),
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       print('Successfully sent data to the API!');
+  //       print(response);
+  //       print(response.body);
+  //       return json.decode(response.body);
+  //     } else {
+  //       print('Failed to send data. Status code: ${response.statusCode}');
+  //       throw Exception('Failed to send RC number. Status code: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('Error sending RC number: $e');
+  //   }
+  // }
+
+  Future<Map<String, dynamic>> sendRcRegNumber(String rcRegNumber) async {
     print(rcRegNumber);
     final Uri apiUrl = Uri.parse('https://kyc-api.aadhaarkyc.io/api/v1/rc/rc-full');
     String token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTY1MTQ3MjA3OCwianRpIjoiN2Y1ZjAzNmEtNDBlMC00NDFlLWE4NzYtMWFjMGU5YWE2OTUyIiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LmlhaWxAYWFkaGFhcmFwaS5pbyIsIm5iZiI6MTY1MTQ3MjA3OCwiZXhwIjoxOTY2ODMyMDc4LCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsicmVhZCJdfX0.Uv7arJdKKhug-6k60H4ovD1VxW1LuDLVcfX5iiKQQs4';
-    final response = await http.post(
-      apiUrl,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: json.encode({
-        'id_number': rcRegNumber,
-      }),
-    );
 
-    if (response.statusCode == 200) {
-      print('Successfully sent data to the API!');
-      print(response);
-      print(response.body);
-      return response.body;
-    } else {
-      print('Failed to send data. Status code: ${response.statusCode}');
-      return response.body;
+    try {
+      final response = await http.post(
+        apiUrl,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode({
+          'id_number': rcRegNumber,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print('Successfully sent data to the API!');
+        Map<String, dynamic> jsonResponse = json.decode(response.body);
+        print(jsonResponse);
+        return jsonResponse;
+      } else {
+        print('Failed to send data. Status code: ${response.statusCode}');
+        throw Exception('Failed to send RC number. Status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error sending RC number: $e');
     }
   }
+
 }

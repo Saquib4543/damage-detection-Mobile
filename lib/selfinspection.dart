@@ -233,7 +233,7 @@ class _SelfInspectionState extends State<SelfInspection> {
             body: SingleChildScrollView(
               child: Column(
                 children: [
-                  SizedBox(height: 30),
+                  SizedBox(height: 20),
                   Text(
                     "Take the vehicle image using camera",
                     style: TextStyle(fontSize: 16, color: Colors.blue[900]),
@@ -374,8 +374,20 @@ class _SelfInspectionState extends State<SelfInspection> {
           ),
           if (imagePath.isNotEmpty) ...[
             Image.file(File(imagePath)),
-            Text("Timestamp: ${timestamps[imagePath]}"),
-            Text("Location: ${locations[imagePath]}"),
+            Text(
+              "Timestamp: ${timestamps[imagePath]}",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              "Location: ${locations[imagePath]}",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
           SizedBox(height: 24),
         ],

@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -87,23 +86,23 @@ class _ImageUploadPageState extends State<ImageUploadPage> with TickerProviderSt
 
                   try {
                     print("Starting image upload");
-                    Map responseText = await ImageUploadService().uploadImage(_imageData!);
+                    Map<String, dynamic> responseText = await ImageUploadService().uploadImage(_imageData!);
                     print("Finished image upload");
                     print(responseText);
 
                     String rcRegNumber = responseText['result']['output']['rc_reg_number'];
                     print("RC Number: $rcRegNumber");
 
-                    var vahaan_response = await ImageUploadService().sendRcRegNumber(rcRegNumber);
-                    print(vahaan_response);
-                    final data = json.decode(vahaan_response);
-                    final selectedData = data['data'].entries.where((entry) {
+                    Map<String, dynamic> vahaanResponse = await ImageUploadService().sendRcRegNumber(rcRegNumber);
+                    print(vahaanResponse);
+
+                    final selectedData = vahaanResponse['data'].entries.where((entry) {
                       return entry.key != 'client_id';
                     }).map((entry) {
                       if (entry.value == null) {
                         return MapEntry(entry.key, 'No Data Present');
                       }
-                      return entry;
+                      return MapEntry(entry.key, entry.value);
                     }).toList();
 
                     Get.to(() => DetailPage(selectedEntries: selectedData));
@@ -159,6 +158,8 @@ class _ImageUploadPageState extends State<ImageUploadPage> with TickerProviderSt
     );
   }
 }
+
+
 
 
 // import 'dart:convert';
