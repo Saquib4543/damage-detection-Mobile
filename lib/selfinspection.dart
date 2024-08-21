@@ -59,7 +59,7 @@ class _SelfInspectionState extends State<SelfInspection> {
   }
 
   Future<http.Response> sendImageToApi(String imagePath, String jwtToken) async {
-    final String apiUrl = "YOUR_API_ENDPOINT_HERE";
+    final String apiUrl = "http://164.52.202.251/fw_damage/create_fw_claim";
 
     final bytes = await File(imagePath).readAsBytes();
     final base64Image = base64Encode(bytes);

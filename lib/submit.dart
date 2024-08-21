@@ -1,8 +1,9 @@
 // import 'dart:convert';
-// import 'package:damagedetection/helpers/constants.dart';
-// import 'package:damagedetection/helpers/UploadSuccess.dart';
+// import 'helpers/constants.dart';
 // import 'package:get/get.dart';
 // import 'package:http/http.dart' as http;
+//
+// import 'helpers/UploadSuccess.dart';
 //
 // void submitInspection(
 //     {String frontSide = "",

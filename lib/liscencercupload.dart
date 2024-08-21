@@ -96,16 +96,8 @@ class _ImageUploadPageState extends State<ImageUploadPage> with TickerProviderSt
                     Map<String, dynamic> vahaanResponse = await ImageUploadService().sendRcRegNumber(rcRegNumber);
                     print(vahaanResponse);
 
-                    final selectedData = vahaanResponse['data'].entries.where((entry) {
-                      return entry.key != 'client_id';
-                    }).map((entry) {
-                      if (entry.value == null) {
-                        return MapEntry(entry.key, 'No Data Present');
-                      }
-                      return MapEntry(entry.key, entry.value);
-                    }).toList();
-
-                    Get.to(() => DetailPage(selectedEntries: selectedData));
+                    // Pass the entire data map to the DetailPage
+                    Get.to(() => DetailPage(selectedEntries: vahaanResponse));
                   } catch (e) {
                     print("Error: $e");
                     _showSnackBar("Error: $e");
@@ -158,7 +150,6 @@ class _ImageUploadPageState extends State<ImageUploadPage> with TickerProviderSt
     );
   }
 }
-
 
 
 

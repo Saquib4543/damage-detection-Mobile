@@ -5,7 +5,7 @@ import 'package:damagedetection1/selfinspection.dart';
 import 'package:get/get.dart';
 
 class DetailPage extends StatelessWidget {
-  final List<dynamic> selectedEntries;
+  final Map<String, dynamic> selectedEntries;
   final Map<String, String> keyMapping = {
     "rc_number": "RC Number",
     "registration_date": "Registration Date",
@@ -65,7 +65,10 @@ class DetailPage extends StatelessWidget {
     "masked_name": "Masked Name",
     "challan_details": "Challan Details",
     "variant": "Variant"
+
   };
+
+
 
   DetailPage({required this.selectedEntries});
 
@@ -77,17 +80,9 @@ class DetailPage extends StatelessWidget {
     return text.split('_').map((word) => word[0].toUpperCase() + word.substring(1).toLowerCase()).join(' ');
   }
 
-  List<Widget> _buildCards(List<dynamic> entries) {
-    List<MapEntry<String, dynamic>> mapEntries = [];
-
-    for (var entry in entries) {
-      if (entry is Map<String, dynamic>) {
-        mapEntries.addAll(entry.entries);
-      } else {
-        // Handle non-map entries
-        mapEntries.add(MapEntry('Item', entry.toString()));
-      }
-    }
+  List<Widget> _buildCards(Map<String, dynamic> data) {
+    var entries = data['data'] as Map<String, dynamic>;
+    var mapEntries = entries.entries.toList();
 
     // Chunking the data into sets of 4
     List<List<MapEntry<String, dynamic>>> chunks = [];
