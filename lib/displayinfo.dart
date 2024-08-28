@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 class DetailPage extends StatelessWidget {
   final Map<String, dynamic> selectedEntries;
+
   final Map<String, String> keyMapping = {
     "rc_number": "RC Number",
     "registration_date": "Registration Date",
@@ -135,7 +136,7 @@ class DetailPage extends StatelessWidget {
                 shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0))),
               ),
               onPressed: () {
-                Get.to(() => SelfInspection());
+                Get.to(() => SelfInspection(data: selectedEntries)); // Pass the data here
               },
               child: Text('Continue to take Car Images', style: TextStyle(color: Colors.blue[900])),
             ),
@@ -148,69 +149,3 @@ class DetailPage extends StatelessWidget {
 }
 
 
-// class DetailPage extends StatelessWidget {
-//   final String rawJsonData;
-//   final Map<String, dynamic> data;
-//
-//   DetailPage({required this.rawJsonData}) : data = json.decode(rawJsonData);
-//
-//   List<Widget> _buildCards(Map<String, dynamic> output) {
-//     List<MapEntry<String, dynamic>> entries = output.entries.toList();
-//
-//     List<List<MapEntry<String, dynamic>>> chunks = [];
-//     for (var i = 0; i < entries.length; i += 4) {
-//       chunks.add(entries.sublist(i, i + 4 > entries.length ? entries.length : i + 4));
-//     }
-//
-//     return chunks.map((chunk) {
-//       return Container(
-//         margin: EdgeInsets.symmetric(vertical: 10),
-//         child: GlassContainer(
-//           padding: EdgeInsets.all(10),
-//           borderRadius: BorderRadius.circular(15),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: chunk.map((entry) {
-//               return Padding(
-//                 padding: const EdgeInsets.symmetric(vertical: 4.0),
-//                 child: Text('${entry.key}: ${entry.value}', style: TextStyle(color: Colors.blue[900])),
-//               );
-//             }).toList(),
-//           ),
-//         ),
-//       );
-//     }).toList();
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final output = data['data'];
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       body: Padding(
-//         padding: EdgeInsets.all(10),
-//         child: ListView(
-//           children: [
-//             Text("Please check your details", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.blue[900]), textAlign: TextAlign.center,),
-//             SizedBox(height: 20),
-//             ..._buildCards(output),
-//             SizedBox(height: 20),
-//             ElevatedButton(
-//               style: ButtonStyle(
-//                 backgroundColor: MaterialStateProperty.all(Colors.yellow),
-//                 side: MaterialStateProperty.all(BorderSide(color: Colors.blue[900]!, width: 2)),
-//
-//                 shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0))),
-//               ),
-//               onPressed: () {
-//                 Get.to(SelfInspection());
-//               },
-//               child: Text('Continue to take images', style: TextStyle(color: Colors.blue[900])),
-//             ),
-//             SizedBox(height: 20), // To give some space at the bottom.
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

@@ -40,6 +40,7 @@ class _ImageUploadPageState extends State<ImageUploadPage> with TickerProviderSt
   @override
   void initState() {
     super.initState();
+
     _controller = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
@@ -59,10 +60,19 @@ class _ImageUploadPageState extends State<ImageUploadPage> with TickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    // final Map<String, dynamic> arguments = Get.arguments;
+    //
+    // // Extract the claimId from the arguments
+    // final String claimId = arguments['claimId'];
+    //
+    // // Print the claimId
+    // print('Claim ID: $claimId');
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Please Upload your RC', style: TextStyle(color: Colors.yellow)),
+        title: Text('Please Upload your RC', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.blue[900],
+
       ),
       body: Center(
         child: Column(
